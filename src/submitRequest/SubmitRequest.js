@@ -4,24 +4,26 @@ import axios from 'axios';
 
 const SubmitRequest = () => {
   const [formData, setFormData] = useState({
-    title: '',
-    body: '',
+    prompt: ''
   });
 
   const [responseMessage, setResponseMessage] = useState('');
+  const [showLoader, setShowLoader] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
+      setShowLoader(true)
       console.log(formData)
-      // Replace with your API endpoint
-      const response = await axios.get('http://127.0.0.1:8000/courses/');
+
+      const response = await axios.post('http://127.0.0.1:8000/give-coursework/', formData);
 
       console.log('POST Request Response:', response.data);
+      
 
-      // Set the response message to display
-      setResponseMessage(`Response: ${response.data}`);
+      setResponseMessage(response.data);
+      setShowLoader(false)
     } catch (error) {
       console.error('Error:', error);
       // Handle errors, e.g., show an error message to the user.
@@ -36,46 +38,50 @@ const SubmitRequest = () => {
     });
   };
 
-  return (
+  return (<div className='mt-5'>
     <Container>
-      <Card>
-        <Card.Header>
-          <h2>Submit a Post</h2>
+      <Card style={{ boxShadow: '0 4px 6px rgba(0, 0, 0, 1)', }}>
+        <Card.Header style={{
+          backgroundColor: 'rgba(33,37,41)', // Background color
+          color: 'white', // Text color
+          textAlign: 'center', // Center the text
+          padding: '10px', // Padding for spacing
+          fontSize: '24px', // Font size
+        }}>
+          <h2>Enter Prompt</h2>
         </Card.Header>
         <Card.Body>
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
-              <Form.Label>Title</Form.Label>
               <Form.Control
-                type="text"
-                name="title"
-                required
-                value={formData.title}
-                onChange={handleChange}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Label>Body</Form.Label>
-              <Form.Control
+                placeholder='Enter your prompt here...'
+                style={{ border: '2px solid #ccc', }}
                 as="textarea"
-                name="body"
-                rows={4}
+                name="prompt"
+                rows={3}
                 required
-                value={formData.body}
+                value={formData.prompt}
                 onChange={handleChange}
               />
             </Form.Group>
-            <Button type="submit" variant="primary">
-              Submit
-            </Button>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <Button type="submit" variant="primary">
+                Submit
+              </Button>
+            </div>
           </Form>
           <div className="mt-3">
             <p>{responseMessage}</p>
           </div>
         </Card.Body>
       </Card>
+    {
+      showLoader && <div className='mt-5' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <span class="loader"></span>
+      </div>
+    }
     </Container>
-  );
+  </div>);
 };
 
 export default SubmitRequest;
